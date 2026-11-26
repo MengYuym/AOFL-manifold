@@ -164,10 +164,6 @@ class AOFL_model(nn.Module):
         cos_loss = (cos_loss_text + cos_loss_audio + cos_loss_visual)
 
 
-        if hasattr(self, 'subspace_ranking'):
-            cos_loss = self.subspace_ranking(
-                [share_text, share_audio, share_visual],
-                [specific_text, specific_audio, specific_visual])
 
         #AAC_loss###################################################################################################
         mse_loss_text = self.RMSE_loss(share_text, specific_text, 'text')

@@ -336,11 +336,6 @@ class Multi_Disentangle_Model(nn.Module):
         orth_text = exclusive_text - cos_theta_text_actual.unsqueeze(-1) * exclusive_text
         orth_audio = exclusive_audio - cos_theta_audio_actual.unsqueeze(-1) * exclusive_audio
         orth_visual = exclusive_visual - cos_theta_visual_actual.unsqueeze(-1) * exclusive_visual
-        # Optional experiment replaces OPR only; baseline remains the default.
-        if hasattr(self, 'subspace_refiners'):
-            orth_text = self.subspace_refiners['text'](shared_text, exclusive_text)
-            orth_audio = self.subspace_refiners['audio'](shared_audio, exclusive_audio)
-            orth_visual = self.subspace_refiners['visual'](shared_visual, exclusive_visual)
         # ============================
 
         fused_text = self.multiattn_text(shared_text, shared_text)

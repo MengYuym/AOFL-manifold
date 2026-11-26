@@ -876,38 +876,10 @@ if __name__ == '__main__':
 
     AOFL_train.refinement = args.refinement
     AOFL_train.subspace_rank = args.subspace_rank
-    if args.refinement == 'directional':
-        from DirectionalRefinement import DirectionalRefinement
-        with torch.random.fork_rng():
-            torch.manual_seed(seed + 10000)
-            AOFL_train.model.multiattn.subspace_refiners = nn.ModuleDict({
-                name: DirectionalRefinement(model_dim)
-                for name in ('text', 'audio', 'visual')
-            }).to(device)
-        AOFL_train.get_optimizer()
-    elif args.refinement != 'baseline':
-        from ManifoldRefinement import SubspaceRefinement
-        # Isolate new initialization from the original model/data random stream.
-        with torch.random.fork_rng():
-            torch.manual_seed(seed + 10000)
-            AOFL_train.model.multiattn.subspace_refiners = nn.ModuleDict({
-                name: SubspaceRefinement(model_dim, args.subspace_rank, args.refinement)
-                for name in ('text', 'audio', 'visual')
-            }).to(device)
-        # New parameters must be present before creating the optimizer.
-        AOFL_train.get_optimizer()
-    AOFL_train.csr_mode = args.csr_mode
-    AOFL_train.subspace_margin = args.subspace_margin
-    if args.csr_mode == 'subspace':
-        if args.refinement != 'baseline':
-            raise ValueError('Subspace CSR experiment keeps original OPR; use refinement=baseline')
-        from SubspaceRanking import SubspaceRanking
-        with torch.random.fork_rng():
-            torch.manual_seed(seed + 20000)
-            AOFL_train.model.subspace_ranking = SubspaceRanking(
-                model_dim, args.subspace_rank, args.subspace_margin).to(device)
-        AOFL_train.get_optimizer()
+    if args.refinement != 'baseline' or args.csr_mode != 'vector':
+        raise ValueError('GAPD/subspace experiments archived; use baseline and vector CSR.')
     AOFL_train.requested_output_dir = args.output_dir
     AOFL_train.count_parameters()
     AOFL_train.train_or_eval_linear_model()
+
 

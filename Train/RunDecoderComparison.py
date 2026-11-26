@@ -8,9 +8,8 @@ from torch import nn
 from FeatureReconstruction import FeatureReconstruction
 
 def install(cls,variant,output=None,weight=.1):
-    if variant=='gapd':
-        from RunGAPDStage3 import install as gapd_install
-        gapd_install(cls)
+    if variant != 'baseline':
+        raise ValueError('Only baseline + decoder is active; GAPD source is archived.')
     original=cls.get_model
     def get_model(self):
         original(self)
@@ -62,7 +61,7 @@ def install(cls,variant,output=None,weight=.1):
     cls.train_or_eval_model_per_epoch=epoch
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['baseline','gapd'],required=True)
+    parser=argparse.ArgumentParser();parser.add_argument('--variant',choices=['baseline'],required=True)
     opt=parser.parse_args();torch.set_num_threads(2)
     output=Path(r'D:\codex\shiyan\output\decoder_comparison_seed7_20261113')/opt.variant
     output.parent.mkdir(exist_ok=True)
